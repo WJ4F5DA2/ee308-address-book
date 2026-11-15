@@ -6,6 +6,7 @@
   "scripts": {
     "test": "node --test tests/unit/*.test.js",
     "test:e2e": "playwright test",
+    "test:integration": "playwright test --config playwright.integration.config.js",
     "preview": "python3 tests/frontend/preview_server.py"
   },
   "devDependencies": {
