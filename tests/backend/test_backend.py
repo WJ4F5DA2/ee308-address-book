@@ -4,6 +4,7 @@ from pathlib import Path
 import sqlite3
 from tempfile import TemporaryDirectory
 import unittest
+from zipfile import ZipFile
 
 from openpyxl import Workbook, load_workbook
 
@@ -121,14 +122,15 @@ class BackendTest(unittest.TestCase):
         self.assertEqual(self.client.get("/api/contacts").json["data"], [])
 
     def test_export_import_round_trip(self):
+        self.contact["methods"].reverse()
         contact = self.create_contact()
         self.client.post(f"/api/contacts/{contact['id']}/favorite")
         response = self.client.get("/api/contacts/export")
         self.assertIn("ContactHub.xlsx", response.headers["Content-Disposition"])
         workbook = load_workbook(BytesIO(response.data))
         self.assertEqual(workbook.active.max_row, 2)
-        self.assertEqual(workbook.active["D2"].value, "01234567")
-        self.assertEqual(workbook.active["D2"].data_type, "s")
+        self.assertEqual(workbook.active["E2"].value, "01234567")
+        self.assertEqual(workbook.active["E2"].data_type, "s")
         self.assertEqual(workbook.active["H2"].data_type, "s")
         result = self.upload(response.data).json["data"]
         self.assertEqual(result, {"success_count": 1, "failed_count": 0, "errors": []})
@@ -140,3 +142,29 @@ class BackendTest(unittest.TestCase):
         self.assertEqual(response.status_code, 200)
         workbook = load_workbook(BytesIO(response.data))
         self.assertEqual(list(workbook.active.values), [tuple(HEADERS)])
+        self.assertEqual(workbook.active.column_dimensions["D"].number_format, "@")
+        self.assertEqual(workbook.active.column_dimensions["E"].number_format, "@")
+
+    def test_import_retains_zeros_from_numeric_phone_format(self):
+        book = Workbook()
+        book.active.append(HEADERS)
+        book.active.append(["测试", "", "", 12345])
+        book.active["D2"].number_format = "00000000"
+        stream = BytesIO()
+        book.save(stream)
+        result = self.upload(stream.getvalue()).json["data"]
+        self.assertEqual(result["success_count"], 1)
+        method = self.client.get("/api/contacts").json["data"][0]["methods"][0]
+        self.assertEqual(method["value"], "00012345")
+
+    def test_import_reads_rows_beyond_reported_sheet_dimensions(self):
+        contents = workbook_bytes(HEADERS, ["测试", "", "", "01234567"])
+        stream = BytesIO()
+        with ZipFile(BytesIO(contents)) as original, ZipFile(stream, "w") as workbook:
+            for member in original.namelist():
+                content = original.read(member)
+                if member == "xl/worksheets/sheet1.xml":
+                    content = content.replace(b'ref="A1:J2"', b'ref="A1:A1"', 1)
+                workbook.writestr(member, content)
+        result = self.upload(stream.getvalue()).json["data"]
+        self.assertEqual(result["success_count"], 1)

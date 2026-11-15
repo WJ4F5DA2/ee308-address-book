@@ -1,3 +1,4 @@
+from collections import Counter
 from io import BytesIO
 import json
 import re
@@ -7,6 +8,7 @@ from zipfile import BadZipFile, ZipFile
 from defusedxml.common import DefusedXmlException
 from flask import send_file
 from openpyxl import Workbook, load_workbook
+from openpyxl.utils import get_column_letter
 from openpyxl.utils.exceptions import InvalidFileException
 
 from .validation import validate_contact
@@ -35,19 +37,24 @@ def join_values(values):
     return ";".join(value.replace("\\", "\\\\").replace(";", "\\;") for value in values)
 
 
-def cell_text(cell):
+def cell_text(cell, *, phone=False):
     if cell.data_type in ("f", "e"):
         raise ValueError("请使用文本或普通值填写单元格。")
     value = cell.value
     if value is None:
         return ""
     if isinstance(value, float) and value.is_integer():
-        return str(int(value))
+        value = int(value)
+    if phone and type(value) is int and value >= 0 and re.fullmatch(r"0+", cell.number_format):
+        return str(value).zfill(len(cell.number_format))
     return str(value).strip()
 
 
 def read_row(cells):
-    values = {header: cell_text(cell) for header, cell in cells.items()}
+    values = {
+        header: cell_text(cell, phone=header in METHOD_COLUMNS["phone"])
+        for header, cell in cells.items()
+    }
     if not any(values.values()):
         return None
 
@@ -59,16 +66,26 @@ def read_row(cells):
     if not isinstance(labels, dict):
         raise ValueError("联系方式标签格式无效。")
 
-    methods = []
+    groups = {}
     for kind, columns in METHOD_COLUMNS.items():
         entries = [value for column in columns for value in split_values(values.get(column, ""))]
         group_labels = labels.get(kind, [""] * len(entries))
         if not isinstance(group_labels, list) or len(group_labels) != len(entries):
             raise ValueError("联系方式与标签数量不匹配。")
-        methods.extend(
+        groups[kind] = [
             {"type": kind, "value": value, "label": label}
             for value, label in zip(entries, group_labels)
-        )
+        ]
+
+    methods = [method for group in groups.values() for method in group]
+    if "order" in labels:
+        order = labels["order"]
+        if (not isinstance(order, list)
+                or any(not isinstance(kind, str) or kind not in groups for kind in order)
+                or Counter(order) != Counter({kind: len(group) for kind, group in groups.items()})):
+            raise ValueError("联系方式顺序与各列内容不匹配。")
+        by_type = {kind: iter(group) for kind, group in groups.items()}
+        methods = [next(by_type[kind]) for kind in order]
 
     favorite = values.get("是否收藏", "").lower()
     if favorite not in ("", "是", "否", "true", "false", "1", "0"):
@@ -118,7 +135,9 @@ def read_contacts(contents):
         try:
             if not book.worksheets:
                 raise ValueError("Excel 文件没有工作表。")
-            return read_sheet(book.worksheets[0])
+            sheet = book.worksheets[0]
+            sheet.reset_dimensions()
+            return read_sheet(sheet)
         finally:
             book.close()
     except (BadZipFile, InvalidFileException, ParseError, DefusedXmlException,
@@ -133,6 +152,7 @@ def export_row(contact):
         values[method["type"]].append(method["value"])
         labels[method["type"]].append(method["label"])
 
+    labels["order"] = [method["type"] for method in contact["methods"]]
     phones = values["phone"]
     return (
         contact["name"], contact["company"], contact["position"], join_values(phones[:1]),
@@ -147,6 +167,9 @@ def download_workbook(filename, contacts=(), *, include_labels=False):
     sheet = book.active
     sheet.title = "联系人"
     sheet.freeze_panes = "A2"
+    for header in METHOD_COLUMNS["phone"]:
+        column = get_column_letter(HEADERS.index(header) + 1)
+        sheet.column_dimensions[column].number_format = "@"
     sheet.append((*HEADERS, LABELS_HEADER) if include_labels else HEADERS)
     for contact in contacts:
         sheet.append(export_row(contact))
