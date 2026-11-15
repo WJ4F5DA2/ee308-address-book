@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="ContactHub 个人通讯录：联系人、多联系方式、收藏与 Excel 管理。">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%23252224'/%3E%3Ctext x='16' y='23' text-anchor='middle' font-size='22' fill='%23f3f1ef'%3EC%3C/text%3E%3C/svg%3E">
+  <title>{% block title %}ContactHub{% endblock %} · ContactHub</title>
+  <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body data-page="{% block page_id %}{% endblock %}">
+  <a class="skip-link" href="#main-content">跳到主要内容</a>
+  <div class="app-shell">
+    <aside class="sidebar" aria-label="主导航">
+      <a class="brand" href="/" aria-label="ContactHub 首页">
+        <svg viewBox="0 0 32 32" aria-hidden="true"><path d="M8 4h17v24H8zM4 9h8M4 16h8M4 23h8M16 12a3 3 0 1 0 0 .1M12.5 22c.6-3 2-4.5 4.5-4.5s3.9 1.5 4.5 4.5"/></svg>
+        <span><strong>ContactHub</strong><small>个人通讯录</small></span>
+      </a>
+      <nav class="main-nav">
+        <a href="/" data-nav="contacts"><span>01</span>全部联系人</a>
+        <a href="/favorites" data-nav="favorites"><span>02</span>我的收藏</a>
+        <a href="/excel" data-nav="excel"><span>03</span>Excel 管理</a>
+        <a href="/about" data-nav="about"><span>04</span>使用说明</a>
+      </nav>
+      <div class="sidebar-foot">
+        <span class="status-dot" aria-hidden="true"></span>
+        <span id="runtime-mode">正在连接 API</span>
+      </div>
+    </aside>
+    <main id="main-content" class="main-content" tabindex="-1">
+      {% block content %}{% endblock %}
+    </main>
+  </div>
+
+  <dialog id="confirm-dialog" class="confirm-dialog" aria-labelledby="confirm-title">
+    <form method="dialog">
+      <p class="eyebrow">CONFIRM</p>
+      <h2 id="confirm-title">确认操作</h2>
+      <p id="confirm-message"></p>
+      <div class="dialog-actions">
+        <button class="button button-quiet" value="cancel">取消</button>
+        <button id="confirm-accept" class="button button-danger" value="confirm">确认删除</button>
+      </div>
+    </form>
+  </dialog>
+  <div id="toast-region" class="toast-region" aria-live="polite" aria-atomic="true"></div>
+  <script type="module" src="/static/js/common.js"></script>
+  {% block scripts %}{% endblock %}
+</body>
+</html>

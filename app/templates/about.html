@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+{% block title %}使用说明{% endblock %}
+{% block page_id %}about{% endblock %}
+{% block content %}
+<header class="page-header"><div><p class="eyebrow">GUIDE / CONTACTHUB</p><h1>使用说明</h1><p class="page-intro">围绕联系人记录，完成收藏、联系方式维护和 Excel 数据交换。</p></div></header>
+<div class="guide-layout">
+  <section><p class="section-number">01 / CONTACTS</p><h2>建立联系人记录</h2><ol class="guide-steps"><li><span>1</span><div><strong>填写基础资料</strong><p>姓名为必填项，公司、职位和备注可按需填写。</p></div></li><li><span>2</span><div><strong>添加多种联系方式</strong><p>支持电话、邮箱、社交账号和邮寄地址，同类型可添加多条。</p></div></li><li><span>3</span><div><strong>收藏重要联系人</strong><p>在列表或详情中切换收藏，到“我的收藏”集中查看。</p></div></li></ol></section>
+  <section><p class="section-number">02 / INTEGRATION</p><h2>前后端接口约定</h2><div class="api-list"><code>GET /api/contacts</code><code>POST /api/contacts</code><code>PUT /api/contacts/&lt;id&gt;</code><code>DELETE /api/contacts/&lt;id&gt;</code><code>POST /api/contacts/&lt;id&gt;/favorite</code><code>POST /api/contacts/import</code><code>GET /api/contacts/export</code></div><p class="guide-note">页面默认请求同源 API。仅在 URL 添加 <code>?mock=1</code> 时使用浏览器内模拟数据，用于前端开发和测试；模拟数据不会写入数据库。</p></section>
+</div>
+{% endblock %}

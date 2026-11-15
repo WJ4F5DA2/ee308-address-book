@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+{% block title %}我的收藏{% endblock %}
+{% block page_id %}favorites{% endblock %}
+{% block content %}
+<header class="page-header">
+  <div><p class="eyebrow">DIRECTORY / PINNED</p><h1>我的收藏</h1><p class="page-intro">常用与重要联系人集中在这里，取消收藏后将从本页移除。</p></div>
+  <a class="button button-primary" href="/">返回全部联系人</a>
+</header>
+{% include "_contacts_workspace.html" %}
+{% endblock %}
+{% block scripts %}<script type="module" src="/static/js/favorites.js"></script>{% endblock %}
