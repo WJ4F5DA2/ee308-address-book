@@ -72,4 +72,8 @@ npm run test:integration
 
 ## 接口与分工
 
-API 路径与字段遵循团队方案，详见 `docs/backend.md`。前端测试记录及后续部署检查见 `docs/frontend-testing.md`。数据库和后端由成员 A 提供，页面和前端测试由成员 B 提供，双方共同联调。
+API 路径与字段遵循团队方案，详见 `docs/backend.md`。测试记录见 `docs/frontend-testing.md`。数据库和后端由成员 A 提供，页面和前端测试由成员 B 提供，双方共同联调。
+
+## 公网部署
+
+应用已部署至 `http://118.31.246.176:8001/`。生产环境使用 Gunicorn、项目独立依赖目录和 systemd，部署结构及公网验收结果见 `docs/deployment.md`。
