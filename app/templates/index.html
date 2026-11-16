@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+{% block title %}全部联系人{% endblock %}
+{% block page_id %}contacts{% endblock %}
+{% block content %}
+<header class="page-header">
+  <div><p class="eyebrow">DIRECTORY / ALL</p><h1>全部联系人</h1><p class="page-intro">维护联系人资料，快速找到每一种联系方式。</p></div>
+  <button id="add-contact" class="button button-primary" type="button"><span aria-hidden="true">＋</span> 新增联系人</button>
+</header>
+{% include "_contacts_workspace.html" %}
+{% endblock %}
+{% block scripts %}<script type="module" src="/static/js/contacts.js"></script>{% endblock %}

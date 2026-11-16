@@ -1,0 +1,15 @@
+{
+  "name": "contacthub-frontend",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "test": "node --test tests/unit/*.test.js",
+    "test:e2e": "playwright test",
+    "test:integration": "playwright test --config playwright.integration.config.js",
+    "preview": "python3 tests/frontend/preview_server.py"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.65.1"
+  }
+}

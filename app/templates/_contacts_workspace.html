@@ -1,0 +1,24 @@
+<section class="contact-workspace">
+  <div class="contact-index">
+    <div class="contact-toolbar">
+      <label class="search-field">
+        <span class="sr-only">搜索联系人</span>
+        <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="6"/><path d="m16 16 4 4"/></svg>
+        <input id="contact-search" type="search" placeholder="搜索姓名、公司或联系方式" autocomplete="off">
+      </label>
+      <span id="contact-count" class="contact-count" aria-live="polite">—</span>
+    </div>
+    <div class="contact-columns" aria-hidden="true"><span>联系人</span><span>主要联系方式</span><span>操作</span></div>
+    <div id="contact-list" class="contact-list" aria-busy="true">
+      <p class="loading-state">正在读取联系人…</p>
+    </div>
+  </div>
+  <aside id="contact-detail" class="contact-detail" aria-label="联系人详情">
+    <div class="detail-placeholder">
+      <span class="placeholder-mark" aria-hidden="true">C</span>
+      <h2>选择一位联系人</h2>
+      <p>在左侧索引中选择联系人，查看完整资料和所有联系方式。</p>
+    </div>
+  </aside>
+</section>
+{% include "contact_form.html" %}

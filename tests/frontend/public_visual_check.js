@@ -1,0 +1,21 @@
+import { chromium } from "@playwright/test";
+import fs from "node:fs/promises";
+
+const baseURL = process.argv[2];
+if (!baseURL) throw new Error("Usage: node tests/frontend/public_visual_check.js <base-url>");
+const output = "test-results/public";
+await fs.mkdir(output, { recursive: true });
+const browser = await chromium.launch({ channel: "msedge", headless: true });
+const page = await browser.newPage({ viewport: { width: 1440, height: 960 } });
+const errors = [];
+const badResponses = [];
+page.on("pageerror", (error) => errors.push(error.message));
+page.on("console", (message) => { if (message.type() === "error") errors.push(message.text()); });
+page.on("response", (response) => { if (response.status() >= 400) badResponses.push(`${response.status()} ${response.url()}`); });
+await page.goto(baseURL, { waitUntil: "networkidle" });
+await page.locator("#contact-list[aria-busy='false']").waitFor();
+await page.screenshot({ path: `${output}/contacthub-public.png`, fullPage: true });
+const overflow = await page.evaluate(() => document.documentElement.scrollWidth > document.documentElement.clientWidth);
+console.log(JSON.stringify({ errors, badResponses, overflow }));
+await browser.close();
+if (errors.length || badResponses.length || overflow) process.exitCode = 1;

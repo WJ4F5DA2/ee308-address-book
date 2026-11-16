@@ -1,0 +1,25 @@
+<dialog id="contact-dialog" class="contact-dialog" aria-labelledby="contact-dialog-title">
+  <form id="contact-form" novalidate>
+    <div class="dialog-heading">
+      <div><p class="eyebrow">CONTACT RECORD</p><h2 id="contact-dialog-title">新增联系人</h2></div>
+      <button id="contact-form-close" class="icon-button" type="button" aria-label="关闭联系人表单">×</button>
+    </div>
+    <input id="contact-id" type="hidden">
+    <div id="contact-form-errors" class="form-errors" role="alert" hidden></div>
+    <div class="form-grid">
+      <label class="field field-required"><span>姓名</span><input id="contact-name" name="name" maxlength="100" required autocomplete="name" placeholder="例如：张三"></label>
+      <label class="field"><span>公司</span><input id="contact-company" name="company" maxlength="100" autocomplete="organization" placeholder="例如：某科技公司"></label>
+      <label class="field"><span>职位</span><input id="contact-position" name="position" maxlength="100" autocomplete="organization-title" placeholder="例如：软件工程师"></label>
+      <label class="field field-wide"><span>备注</span><textarea id="contact-remark" name="remark" rows="3" placeholder="记录关系、地址补充或其他说明"></textarea></label>
+    </div>
+    <section class="method-editor" aria-labelledby="method-editor-title">
+      <div class="section-heading"><div><h3 id="method-editor-title">联系方式</h3><p>同一类型也可以添加多条，例如个人手机和工作手机。</p></div><button id="add-method" class="button button-quiet" type="button">＋ 添加联系方式</button></div>
+      <div class="method-labels" aria-hidden="true"><span>类型</span><span>内容</span><span>标签</span><span></span></div>
+      <div id="method-list" class="method-list"></div>
+    </section>
+    <div class="dialog-actions">
+      <button id="contact-form-cancel" class="button button-quiet" type="button">取消</button>
+      <button id="contact-form-save" class="button button-primary" type="submit">保存联系人</button>
+    </div>
+  </form>
+</dialog>

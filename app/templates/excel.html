@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% block title %}Excel 管理{% endblock %}
+{% block page_id %}excel{% endblock %}
+{% block content %}
+<header class="page-header">
+  <div><p class="eyebrow">DATA / XLSX</p><h1>Excel 管理</h1><p class="page-intro">使用统一模板批量导入，或将全部联系人导出为 .xlsx 文件。</p></div>
+  <button id="export-contacts" class="button button-primary" type="button">导出全部联系人</button>
+</header>
+<div class="excel-layout">
+  <section class="excel-import" aria-labelledby="import-title">
+    <p class="section-number">01 / IMPORT</p><h2 id="import-title">导入联系人</h2>
+    <p>仅支持 .xlsx 文件。请先下载模板，不要修改第一行表头。</p>
+    <label id="file-dropzone" class="file-dropzone" for="excel-file">
+      <svg viewBox="0 0 32 32" aria-hidden="true"><path d="M16 22V5m-6 6 6-6 6 6M5 20v7h22v-7"/></svg>
+      <strong>选择 Excel 文件</strong><span>文件内容将由后端解析并校验</span>
+    </label>
+    <input id="excel-file" class="sr-only" type="file" accept=".xlsx,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet">
+    <div id="selected-file" class="selected-file" aria-live="polite">尚未选择文件</div>
+    <div id="import-errors" class="form-errors" role="alert" hidden></div>
+    <div class="import-actions"><button id="import-contacts" class="button button-dark" type="button" disabled>开始导入</button><a href="/static/samples/contacthub-template.xlsx" class="text-link" download>下载标准模板</a></div>
+    <div id="import-result" class="import-result" aria-live="polite" hidden></div>
+  </section>
+  <section class="excel-spec" aria-labelledby="spec-title">
+    <p class="section-number">02 / FORMAT</p><h2 id="spec-title">模板格式</h2>
+    <p>每位联系人占一行。同一单元格中的多个值使用英文分号 <code>;</code> 分隔。</p>
+    <div class="table-scroll"><table class="spec-table"><thead><tr><th>列名</th><th>要求</th><th>示例</th></tr></thead><tbody>
+      <tr><td>姓名</td><td>必填</td><td>张三</td></tr><tr><td>公司 / 职位</td><td>可选</td><td>某科技公司 / 工程师</td></tr>
+      <tr><td>电话 / 其他电话</td><td>可多值</td><td>13800000000;13900000000</td></tr><tr><td>邮箱 / 社交账号</td><td>可多值</td><td>zhangsan@example.com</td></tr>
+      <tr><td>邮寄地址</td><td>可选</td><td>福州大学</td></tr><tr><td>是否收藏</td><td>是 / 否</td><td>是</td></tr><tr><td>备注</td><td>可选</td><td>大学同学</td></tr>
+    </tbody></table></div>
+    <aside class="format-note"><strong>导入规则</strong><ul><li>缺少“姓名”列时拒绝整个文件。</li><li>单行错误不影响其他有效行导入。</li><li>错误行号和原因会在导入后展示。</li></ul></aside>
+  </section>
+</div>
+{% endblock %}
+{% block scripts %}<script type="module" src="/static/js/excel.js"></script>{% endblock %}
