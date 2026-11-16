@@ -10,7 +10,7 @@ WorkingDirectory=/opt/contacthub
 Environment=CONTACTHUB_DATABASE=/var/lib/contacthub/contacts.sqlite
 Environment=PYTHONUNBUFFERED=1
 Environment=PYTHONPATH=/opt/contacthub/.deps
-ExecStart=/usr/bin/python3 -m gunicorn --bind 0.0.0.0:8001 --workers 1 --threads 4 --timeout 60 --access-logfile - --error-logfile - wsgi:app
+ExecStart=/usr/bin/python3 -m gunicorn --bind 127.0.0.1:8002 --workers 1 --threads 4 --timeout 60 --access-logfile - --error-logfile - wsgi:app
 Restart=always
 RestartSec=3
 NoNewPrivileges=true
